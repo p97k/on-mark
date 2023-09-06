@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/p97k/on-mark/products"
 	"log"
@@ -68,6 +69,12 @@ func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 		err := prod.FromJSON(request.Body)
 		if err != nil {
 			http.Error(response, "Ops, unable to create json", http.StatusBadRequest)
+			return
+		}
+
+		err = prod.Validate()
+		if err != nil {
+			http.Error(response, fmt.Sprintf("Error Validating Product: %s", err), http.StatusBadRequest)
 			return
 		}
 
