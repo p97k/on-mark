@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/gorilla/mux"
 	"github.com/p97k/on-mark/handlers"
 	"log"
 	"net/http"
@@ -12,12 +13,22 @@ import (
 
 func main() {
 	tempLog := log.New(os.Stdout, "product-api", log.LstdFlags)
-	//handler := handlers.NewLogger(tempLog)
 	productHandler := handlers.NewProducts(tempLog)
 
-	serveMux := http.NewServeMux()
-	serveMux.Handle("/", productHandler)
+	serveMux := mux.NewRouter()
 
+	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", productHandler.GetProducts)
+
+	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", productHandler.UpdateProduct)
+	putRouter.Use(productHandler.MiddlewareProductValidation)
+
+	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", productHandler.AddProducts)
+	postRouter.Use(productHandler.MiddlewareProductValidation)
+
+	//create a new server
 	server := &http.Server{
 		Addr:         ":8080",
 		Handler:      serveMux,
@@ -26,7 +37,9 @@ func main() {
 		WriteTimeout: 1 * time.Second,
 	}
 
+	//start the server
 	go func() {
+		tempLog.Println("On Mark is up and running :)")
 		err := server.ListenAndServe()
 		if err != nil {
 			tempLog.Fatal(err)

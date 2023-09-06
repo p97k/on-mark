@@ -65,8 +65,7 @@ func findProduct(id int) (*Product, int, error) {
 
 func generateNextId() int {
 	lp := productList[len(productList)-1]
-	lp.ID++
-	return lp.ID
+	return lp.ID + 1
 }
 
 var productList = []*Product{
@@ -82,7 +81,7 @@ var productList = []*Product{
 	&Product{
 		ID:          2,
 		Name:        "Espresso",
-		Description: "Short and strong coffee without milk",
+		Description: "Strong coffee without milk",
 		Price:       1.99,
 		SKU:         "fjd34",
 		CreatedAt:   time.Now().UTC().String(),
