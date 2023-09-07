@@ -9,7 +9,9 @@ import (
 )
 
 func ProductRoutes(serveMux *mux.Router) {
-	routeIdRegex := "/{id:[0-9]+}"
+	baseProductUrl := "/v1/products/"
+	routeIdRegex := "{id:[0-9]+}"
+	idRequiredRoutes := baseProductUrl + routeIdRegex
 
 	tempLog := log.New(os.Stdout, "product-api", log.LstdFlags)
 
@@ -17,19 +19,19 @@ func ProductRoutes(serveMux *mux.Router) {
 
 	//GET
 	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", productHandler.GetProducts)
+	getRouter.HandleFunc(baseProductUrl, productHandler.GetProducts)
 
 	//PUT
 	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc(routeIdRegex, productHandler.UpdateProduct)
+	putRouter.HandleFunc(idRequiredRoutes, productHandler.UpdateProduct)
 	putRouter.Use(productHandler.MiddlewareProductValidation)
 
 	//POST
 	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", productHandler.AddProducts)
+	postRouter.HandleFunc(baseProductUrl, productHandler.AddProducts)
 	postRouter.Use(productHandler.MiddlewareProductValidation)
 
 	//DELETE
 	deleteRouter := serveMux.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc(routeIdRegex, productHandler.DeleteProduct)
+	deleteRouter.HandleFunc(idRequiredRoutes, productHandler.DeleteProduct)
 }
