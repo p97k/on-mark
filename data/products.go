@@ -1,4 +1,4 @@
-package products
+package data
 
 import (
 	"encoding/json"
@@ -69,6 +69,18 @@ func UpdateProduct(id int, p *Product) error {
 
 	p.ID = id
 	productList[pos] = p
+
+	return nil
+}
+
+func DeleteProduct(id int) error {
+	_, i, _ := findProduct(id)
+
+	if i == -1 {
+		return ErrProductNotFound
+	}
+
+	productList = append(productList[:i], productList[i+1])
 
 	return nil
 }
