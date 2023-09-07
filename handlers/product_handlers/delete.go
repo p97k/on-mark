@@ -2,7 +2,7 @@ package product_handlers
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/p97k/on-mark/data"
+	"github.com/p97k/on-mark/datas"
 	"net/http"
 	"strconv"
 )
@@ -17,8 +17,8 @@ func (p *Products) DeleteProduct(response http.ResponseWriter, request *http.Req
 
 	p.l.Println("handle DELETE product", id)
 
-	err = data.DeleteProduct(id)
-	if err == data.ErrProductNotFound {
+	err = datas.DeleteProduct(id)
+	if err == datas.ErrProductNotFound {
 		http.Error(response, "Product Not Found", http.StatusNotFound)
 		return
 	}

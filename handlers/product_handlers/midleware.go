@@ -19,7 +19,7 @@ package product_handlers
 import (
 	"context"
 	"fmt"
-	"github.com/p97k/on-mark/data"
+	"github.com/p97k/on-mark/datas"
 	"log"
 	"net/http"
 )
@@ -36,7 +36,7 @@ type KeyProduct struct{}
 
 func (p *Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(response http.ResponseWriter, request *http.Request) {
-		prod := data.Product{}
+		prod := datas.Product{}
 		err := prod.FromJSON(request.Body)
 		if err != nil {
 			http.Error(response, "Ops, unable to create json", http.StatusBadRequest)

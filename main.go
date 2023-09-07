@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/p97k/on-mark/handlers/product_handlers"
+	"github.com/p97k/on-mark/routes"
 	"log"
 	"net/http"
 	"os"
@@ -12,26 +12,10 @@ import (
 )
 
 func main() {
-	routeIdRegex := "/{id:[0-9]+}"
-
-	tempLog := log.New(os.Stdout, "product-api", log.LstdFlags)
-	productHandler := product_handlers.NewProducts(tempLog)
-
 	serveMux := mux.NewRouter()
+	tempLog := log.New(os.Stdout, "on-mark", log.LstdFlags)
 
-	getRouter := serveMux.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", productHandler.GetProducts)
-
-	putRouter := serveMux.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc(routeIdRegex, productHandler.UpdateProduct)
-	putRouter.Use(productHandler.MiddlewareProductValidation)
-
-	postRouter := serveMux.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", productHandler.AddProducts)
-	postRouter.Use(productHandler.MiddlewareProductValidation)
-
-	deleteRouter := serveMux.Methods(http.MethodDelete).Subrouter()
-	deleteRouter.HandleFunc(routeIdRegex, productHandler.DeleteProduct)
+	routes.InitRoutes(serveMux)
 
 	//create a new server
 	server := &http.Server{

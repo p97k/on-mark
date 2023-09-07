@@ -2,7 +2,7 @@ package product_handlers
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/p97k/on-mark/data"
+	"github.com/p97k/on-mark/datas"
 	"net/http"
 	"strconv"
 )
@@ -17,10 +17,10 @@ func (p *Products) UpdateProduct(response http.ResponseWriter, request *http.Req
 
 	p.l.Println("handle PUT product", id)
 
-	prod := request.Context().Value(KeyProduct{}).(data.Product)
+	prod := request.Context().Value(KeyProduct{}).(datas.Product)
 
-	err = data.UpdateProduct(id, &prod)
-	if err == data.ErrProductNotFound {
+	err = datas.UpdateProduct(id, &prod)
+	if err == datas.ErrProductNotFound {
 		http.Error(response, "product not found", http.StatusNotFound)
 	}
 
