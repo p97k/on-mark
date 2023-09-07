@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	goHandler "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/p97k/on-mark/routes"
 	"log"
@@ -17,10 +18,13 @@ func main() {
 
 	routes.InitRoutes(serveMux)
 
+	origins := []string{"http://localhost:3000"}
+	corsHandler := goHandler.CORS(goHandler.AllowedOrigins(origins))
+
 	//create a new server
 	server := &http.Server{
 		Addr:         ":8080",
-		Handler:      serveMux,
+		Handler:      corsHandler(serveMux),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
