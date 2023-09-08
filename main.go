@@ -2,11 +2,10 @@ package main
 
 import (
 	"context"
-	"database/sql"
-	"github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	goHandler "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	dataAccess "github.com/p97k/on-mark/data-access"
 	"github.com/p97k/on-mark/routes"
 	"log"
 	"net/http"
@@ -18,25 +17,8 @@ import (
 func main() {
 	tempLog := log.New(os.Stdout, "on-mark", log.LstdFlags)
 
-	cfg := mysql.Config{
-		User:   os.Getenv("DBUSER"),
-		Passwd: os.Getenv("DBPASS"),
-		Net:    "tcp",
-		Addr:   "127.0.0.1:3306",
-		DBName: "on-mark-db",
-	}
-
-	db, err := sql.Open("mysql", cfg.FormatDSN())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pingErr := db.Ping()
-	if pingErr != nil {
-		log.Fatal(pingErr)
-	}
-
-	tempLog.Println("Successfully Connected to on-mark DB!")
+	//connecting to database
+	dataAccess.Start()
 
 	serveMux := mux.NewRouter()
 
@@ -57,9 +39,9 @@ func main() {
 	//start the server
 	go func() {
 		tempLog.Println("On Mark is up and running :)")
-		err := server.ListenAndServe()
-		if err != nil {
-			tempLog.Fatal(err)
+		startSeverErr := server.ListenAndServe()
+		if startSeverErr != nil {
+			tempLog.Fatal(startSeverErr)
 		}
 	}()
 
@@ -72,8 +54,8 @@ func main() {
 
 	timeContext, _ := context.WithTimeout(context.Background(), 30*time.Second)
 
-	err = server.Shutdown(timeContext)
-	if err != nil {
+	shutDownErr := server.Shutdown(timeContext)
+	if shutDownErr != nil {
 		return
 	}
 }

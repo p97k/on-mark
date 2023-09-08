@@ -1,10 +1,13 @@
 package datas
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	data_access "github.com/p97k/on-mark/data-access"
 	"io"
+	"log"
 	"time"
 )
 
@@ -101,4 +104,39 @@ var productList = []*Product{
 		CreatedAt:   time.Now().UTC().String(),
 		UpdatedAt:   time.Now().UTC().String(),
 	},
+}
+
+//Migrating To Mysql
+
+func GetProductList() error {
+	var product Product
+
+	sqlQuery := `SELECT * FROM products`
+
+	rows, err := data_access.DB.Query(sqlQuery)
+	if err != nil {
+		return err
+	}
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
+	for rows.Next() {
+		err := rows.Scan(product)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(product)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return nil
 }
