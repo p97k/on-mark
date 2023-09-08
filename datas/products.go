@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"io"
-	"regexp"
 	"time"
 )
 
@@ -14,7 +13,6 @@ type Product struct {
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
 	Price       float32 `json:"price" validate:"gt=0"`
-	SKU         string  `json:"sku" validate:"required,sku"`
 	CreatedAt   string  `json:"-"`
 	UpdatedAt   string  `json:"-"`
 	DeletedAt   string  `json:"-"`
@@ -34,22 +32,7 @@ func (p *Products) ToJSON(w io.Writer) error {
 
 func (p *Product) Validate() error {
 	validate := validator.New()
-	err := validate.RegisterValidation("sku", validateSKU)
-	if err != nil {
-		return err
-	}
-
 	return validate.Struct(p)
-}
-
-func validateSKU(fl validator.FieldLevel) bool {
-	reg := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
-	matches := reg.FindAllString(fl.Field().String(), -1)
-
-	if len(matches) != 1 {
-		return false
-	}
-	return true
 }
 
 func GetProducts() Products {
@@ -108,7 +91,6 @@ var productList = []*Product{
 		Name:        "Latte",
 		Description: "Milk + Espresso",
 		Price:       2.99,
-		SKU:         "abc323",
 		CreatedAt:   time.Now().UTC().String(),
 		UpdatedAt:   time.Now().UTC().String(),
 	},
@@ -117,7 +99,6 @@ var productList = []*Product{
 		Name:        "Espresso",
 		Description: "Strong coffee without milk",
 		Price:       1.99,
-		SKU:         "fjd34",
 		CreatedAt:   time.Now().UTC().String(),
 		UpdatedAt:   time.Now().UTC().String(),
 	},
