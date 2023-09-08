@@ -24,7 +24,7 @@ func main() {
 
 	routes.InitRoutes(serveMux)
 
-	origins := []string{"http://localhost:3000"}
+	origins := []string{"http://localhost:3000", "127.0.0.1:3306"}
 	corsHandler := goHandler.CORS(goHandler.AllowedOrigins(origins))
 
 	//create a new server
