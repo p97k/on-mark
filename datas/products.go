@@ -15,7 +15,6 @@ type Product struct {
 	Price       float32 `json:"price" validate:"gt=0"`
 	CreatedAt   string  `json:"-"`
 	UpdatedAt   string  `json:"-"`
-	DeletedAt   string  `json:"-"`
 }
 
 type Products []*Product
